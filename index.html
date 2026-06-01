@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nano Mech Labs — Award-Winning Innovation-Based Learning Platform</title>
+  <meta name="description" content="Transform K-12 education with a seamless blend of academic policy, STEAM, SDGs, and student psychological assessments powered by our proprietary AI solution." />
+  <meta name="keywords" content="Nano Mech Labs, K-12 education, STEAM learning, EdTech, AI assessment, innovation-based learning, SDGs, psychological assessment, school technology, NEP 2020, India" />
+  <meta name="author" content="Nano Mech Labs" />
+  <meta property="og:title" content="Nano Mech Labs | Award-Winning Innovation-Based Learning Platform" />
+  <meta property="og:description" content="Transform K-12 education with a seamless blend of academic policy, STEAM, SDGs, and student psychological assessments powered by our proprietary AI solution." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://nanomechlabs.com/logo.jpg" />
+
+  <!-- EmailJS SDK — loaded with defer so DOM is ready before our script runs -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
+
+  <!-- Preconnect fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Favicon inline SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>⚛️</text></svg>" />
+
+  <style>
+    /* ── Base Reset & Variables ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #060812;
+      --bg2:       #080d1a;
+      --surface:   #0d1425;
+      --surface2:  #111c35;
+      --border:    rgba(255,255,255,0.07);
+      --cyan:      #00e5ff;
+      --blue:      #3b82f6;
+      --lavender:  #a78bfa;
+      --coral:     #f97316;
+      --rose:      #f43f5e;
+      --mint:      #10b981;
+      --yellow:    #fbbf24;
+      --pink:      #ec4899;
+      --text:      #e2e8f0;
+      --text-muted:#94a3b8;
+      --gradient:  linear-gradient(135deg, var(--cyan), var(--blue), var(--lavender));
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── Scroll Progress ── */
+    #scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: var(--gradient);
+      z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* ── Loader ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+    .loader-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .loader-sub {
+      font-size: 0.8rem;
+      letter-spacing: 0.3em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    .loader-bar-wrap {
+      width: 200px;
+      height: 3px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .loader-bar {
+      height: 100%;
+      background: var(--gradient);
+      border-radius: 99px;
+      animation: loadBar 1.8s ease forwards;
+    }
+    @keyframes loadBar { from { width: 0; } to { width: 100%; } }
+    .loader-dots { display: flex; gap: 8px; }
+    .loader-dots span {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: dotPulse 1.2s infinite;
+    }
+    .loader-dots span:nth-child(2) { animation-delay: 0.2s; background: var(--blue); }
+    .loader-dots span:nth-child(3) { animation-delay: 0.4s; background: var(--lavender); }
+    @keyframes dotPulse { 0%,80%,100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+
+    /* ── Nav ── */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.3s, backdrop-filter 0.3s, padding 0.3s;
+    }
+    #navbar.scrolled {
+      background: rgba(6,8,18,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 14px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+    .nav-links a.nav-cta {
+      background: var(--gradient);
+      color: #000 !important;
+      font-weight: 700;
+      padding: 10px 20px;
+    }
+    .nav-links a.nav-cta:hover { opacity: 0.9; background: var(--gradient); }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile nav */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: rgba(6,8,18,0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px 24px;
+      z-index: 999;
+      flex-direction: column;
+      gap: 4px;
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .mobile-nav.open { opacity: 1; transform: translateY(0); display: flex; }
+    .mobile-nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 12px 16px;
+      border-radius: 10px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .mobile-nav a:hover { color: var(--text); background: var(--surface); }
+
+    /* ── Container ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+    /* ── Section base ── */
+    .section { padding: 120px 0; position: relative; overflow: hidden; }
+
+    /* ── Floating shapes ── */
+    .floating-shapes { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      animation: floatShape 20s ease-in-out infinite;
+    }
+    .shape-hex {
+      background: none !important;
+      opacity: 0.08;
+      font-size: inherit;
+    }
+    @keyframes floatShape {
+      0%,100% { transform: translate(0,0) rotate(0deg); }
+      33% { transform: translate(20px,-15px) rotate(120deg); }
+      66% { transform: translate(-15px,20px) rotate(240deg); }
+    }
+
+    /* ── Reveal animations ── */
+    .reveal, .reveal-left, .reveal-right {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal-left { transform: translateX(-40px); }
+    .reveal-right { transform: translateX(40px); }
+    .reveal.visible, .reveal-left.visible, .reveal-right.visible {
+      opacity: 1;
+      transform: translate(0);
+    }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+    .delay-5 { transition-delay: 0.5s; }
+    .delay-6 { transition-delay: 0.6s; }
+
+    /* ── Typography helpers ── */
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--cyan);
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+    .section-title em { font-style: normal; color: var(--cyan); }
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.8;
+    }
+    .section-subtitle.center { text-align: center; margin: 0 auto; }
+    .gradient-text {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ═══════════════════════════════════════
+       § 1 · HERO
+    ═══════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 0;
+      position: relative;
+    }
+    .hero-bg-img {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 50%, rgba(0,229,255,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 20% 80%, rgba(167,139,250,0.06) 0%, transparent 60%);
+    }
+    #particles-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 680px; padding-top: 100px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0,229,255,0.08);
+      border: 1px solid rgba(0,229,255,0.25);
+      border-radius: 99px;
+      padding: 8px 18px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--cyan);
+      margin-bottom: 28px;
+    }
+    .hero-badge .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
+    .hero-title .line2 {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-typed-wrap {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      min-height: 1.8em;
+    }
+    .hero-typed-prefix { margin-right: 6px; }
+    #typed-text { color: var(--cyan); font-weight: 600; }
+    .cursor-blink {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background: var(--cyan);
+      vertical-align: text-bottom;
+      margin-left: 2px;
+      animation: blink 0.8s step-end infinite;
+    }
+    .hero-description {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+    .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--gradient);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 14px 28px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 14px 28px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .btn-secondary:hover { background: var(--surface2); border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+    .scroll-indicator {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .scroll-mouse {
+      width: 22px; height: 36px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 11px;
+      position: relative;
+    }
+    .scroll-mouse::after {
+      content: '';
+      position: absolute;
+      top: 6px; left: 50%;
+      transform: translateX(-50%);
+      width: 3px; height: 7px;
+      background: var(--cyan);
+      border-radius: 2px;
+      animation: scrollDot 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollDot { 0% { top: 6px; opacity: 1; } 100% { top: 20px; opacity: 0; } }
+
+    /* ═══════════════════════════════════════
+       § 2 · ABOUT
+    ═══════════════════════════════════════ */
+    #about { background: var(--bg2); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-img-wrap {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+    }
+    .about-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .about-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,229,255,0.1), rgba(167,139,250,0.1));
+    }
+    .about-visual { position: relative; }
+    .about-accent-card {
+      position: absolute;
+      bottom: -24px; right: -24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      backdrop-filter: blur(10px);
+    }
+    .big-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .about-accent-card .label { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .stat-card:hover { border-color: var(--cyan); transform: translateY(-4px); }
+    .stat-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ═══════════════════════════════════════
+       § 3 · PRODUCTS
+    ═══════════════════════════════════════ */
+    #products { background: var(--bg); }
+    .products-header { text-align: center; margin-bottom: 64px; }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .products-grid .product-card:last-child:nth-child(3n+2) {
+      grid-column: 2;
+    }
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--gradient);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .product-card:hover { border-color: rgba(0,229,255,0.3); transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,229,255,0.08); }
+    .product-card:hover::before { opacity: 1; }
+    .product-icon { font-size: 2.2rem; margin-bottom: 18px; }
+    .product-name { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; }
+    .product-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
+    .product-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .product-tag-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      background: var(--bg);
+    }
+    .product-arrow { color: var(--cyan); font-size: 1.2rem; transition: transform 0.2s; }
+    .product-card:hover .product-arrow { transform: translateX(6px); }
+
+    /* ═══════════════════════════════════════
+       § 4 · STEAM
+    ═══════════════════════════════════════ */
+    #steam { background: var(--bg2); }
+    .steam-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .steam-icons-grid { display: flex; gap: 12px; flex-wrap: wrap; margin: 28px 0; }
+    .steam-icon-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      text-align: center;
+      min-width: 72px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .steam-icon-card:hover { border-color: var(--cyan); transform: translateY(-4px); }
+    .steam-icon-card .icon { font-size: 1.6rem; margin-bottom: 6px; }
+    .steam-icon-card .label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+    .steam-features { display: flex; flex-direction: column; gap: 20px; margin-top: 8px; }
+    .steam-feature { display: flex; align-items: flex-start; gap: 16px; }
+    .steam-feature-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+    .steam-feature-title { font-weight: 700; margin-bottom: 4px; font-size: 0.95rem; }
+    .steam-feature-desc { font-size: 0.875rem; color: var(--text-muted); line-height: 1.65; }
+    .steam-visual { position: relative; border-radius: 24px; overflow: hidden; }
+    .steam-visual img { width: 100%; display: block; border-radius: 24px; }
+    .steam-visual-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(244,63,94,0.08), rgba(0,229,255,0.06));
+      border-radius: 24px;
+    }
+
+    /* ═══════════════════════════════════════
+       § 5 · SDGs
+    ═══════════════════════════════════════ */
+    #sdgs { background: var(--bg); }
+    .sdgs-header { text-align: center; margin-bottom: 64px; }
+    .sdg-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .sdg-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .sdg-card:hover { border-color: var(--mint); transform: translateY(-6px); }
+    .sdg-icon { font-size: 2.4rem; margin-bottom: 14px; }
+    .sdg-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--mint);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .sdg-title-text { font-weight: 600; font-size: 0.95rem; }
+
+    /* ═══════════════════════════════════════
+       § 6 · AI ASSESSMENT
+    ═══════════════════════════════════════ */
+    #ai-assessment { background: var(--bg2); }
+    .ai-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .ai-features-list { display: flex; flex-direction: column; gap: 24px; margin-top: 36px; }
+    .ai-feature { display: flex; gap: 20px; align-items: flex-start; }
+    .ai-feature-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--cyan);
+      background: rgba(0,229,255,0.1);
+      border: 1px solid rgba(0,229,255,0.2);
+      border-radius: 8px;
+      padding: 6px 10px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .ai-feature-title { font-weight: 700; margin-bottom: 4px; font-size: 0.95rem; }
+    .ai-feature-desc { font-size: 0.875rem; color: var(--text-muted); line-height: 1.65; }
+    .ai-visual { position: relative; border-radius: 24px; overflow: hidden; }
+    .ai-visual img { width: 100%; display: block; border-radius: 24px; }
+    .neural-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+    /* ═══════════════════════════════════════
+       § 7 · ACHIEVEMENTS
+    ═══════════════════════════════════════ */
+    #achievements { background: var(--bg); }
+    .achievements-header { text-align: center; margin-bottom: 64px; }
+    .achievements-mega-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 64px;
+    }
+    .mega-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 24px;
+      text-align: center;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .mega-stat:hover { border-color: var(--yellow); transform: translateY(-4px); }
+    .mega-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .mega-label { font-size: 0.88rem; color: var(--text-muted); font-weight: 500; }
+
+    .awards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .award-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .award-card:hover { border-color: var(--yellow); transform: translateY(-4px); }
+    .award-icon { font-size: 2rem; flex-shrink: 0; }
+    .award-title { font-weight: 700; margin-bottom: 4px; font-size: 0.95rem; }
+    .award-org { font-size: 0.8rem; color: var(--yellow); font-weight: 600; margin-bottom: 8px; }
+    .award-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ═══════════════════════════════════════
+       § 8 · CONTACT
+    ═══════════════════════════════════════ */
+    #contact { background: var(--bg2); }
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .contact-info { display: flex; flex-direction: column; gap: 20px; margin-top: 36px; }
+    .contact-info-item { display: flex; align-items: flex-start; gap: 16px; }
+    .contact-icon-wrap {
+      font-size: 1.2rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      flex-shrink: 0;
+    }
+    .contact-info-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .contact-info-value { font-size: 0.9rem; line-height: 1.6; }
+    .social-links { display: flex; align-items: center; gap: 12px; margin-top: 32px; }
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px; height: 42px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .social-btn:hover { background: var(--surface2); border-color: var(--cyan); transform: translateY(-2px); }
+    .social-phone {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px; height: 42px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .social-phone:hover { background: var(--surface2); border-color: var(--cyan); transform: translateY(-2px); }
+
+    /* Contact form */
+    .contact-form-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+    }
+    .form-title { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 28px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.04em; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+      outline: none;
+      width: 100%;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--cyan); }
+    .form-group select option { background: var(--bg); }
+    .form-group textarea { min-height: 120px; resize: vertical; }
+    .form-error { font-size: 0.78rem; color: var(--rose); display: none; }
+    .form-error.show { display: block; }
+    .form-group input.invalid,
+    .form-group select.invalid,
+    .form-group textarea.invalid { border-color: var(--rose); }
+
+    .btn-submit {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--gradient);
+      color: #000;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      margin-top: 8px;
+    }
+    .btn-submit:hover:not(:disabled) { opacity: 0.9; transform: translateY(-2px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 48px 24px;
+    }
+    .form-success.show { display: block; }
+    .success-icon { font-size: 3rem; margin-bottom: 16px; }
+    .success-title { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+    .success-msg { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    #footer { background: var(--bg); border-top: 1px solid var(--border); padding: 48px 0; }
+    .footer-inner { display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; }
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 4px; }
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .footer-links a:hover { color: var(--text); background: var(--surface); }
+    .footer-copy { font-size: 0.8rem; color: rgba(255,255,255,0.3); max-width: 600px; line-height: 1.7; }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .products-grid .product-card:last-child:nth-child(3n+2) { grid-column: auto; }
+      .achievements-mega-stats { grid-template-columns: repeat(2, 1fr); }
+      .awards-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .section { padding: 80px 0; }
+      .about-grid,
+      .steam-layout,
+      .ai-layout,
+      .contact-layout { grid-template-columns: 1fr; gap: 48px; }
+      .about-visual { order: -1; }
+      .about-accent-card { right: 0; bottom: -16px; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+      .products-grid { grid-template-columns: 1fr; }
+      .sdg-grid { grid-template-columns: repeat(2, 1fr); }
+      .achievements-mega-stats { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+      .contact-form-wrap { padding: 28px 20px; }
+      .container { padding: 0 20px; }
+    }
+    @media (max-width: 480px) {
+      .hero-title { font-size: 2.8rem; }
+      .sdg-grid { grid-template-columns: 1fr; }
+      .achievements-mega-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCROLL PROGRESS BAR
+  ═══════════════════════════════════════════════════════ -->
+  <div id="scroll-progress" role="progressbar" aria-label="Page scroll progress"></div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LOADING SCREEN
+  ═══════════════════════════════════════════════════════ -->
+  <div id="loader" role="status" aria-live="polite">
+    <div class="loader-logo">Nano Mech Labs</div>
+    <div class="loader-sub">Innovation · Learning · Future</div>
+    <div class="loader-bar-wrap">
+      <div class="loader-bar"></div>
+    </div>
+    <div class="loader-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       NAVIGATION
+  ═══════════════════════════════════════════════════════ -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <a href="#hero" class="nav-logo" id="nav-logo">Nano Mech Labs</a>
+
+    <div class="nav-links" id="nav-links">
+      <a href="#about"         id="nav-about">About</a>
+      <a href="#products"      id="nav-products">Products</a>
+      <a href="#steam"         id="nav-steam">STEAM</a>
+      <a href="#sdgs"          id="nav-sdgs">SDGs</a>
+      <a href="#ai-assessment" id="nav-ai">AI Engine</a>
+      <a href="#achievements"  id="nav-achievements">Impact</a>
+      <a href="#contact"       class="nav-cta" id="nav-contact">Get Started</a>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+    <a href="#about">About</a>
+    <a href="#products">Products</a>
+    <a href="#steam">STEAM</a>
+    <a href="#sdgs">SDGs</a>
+    <a href="#ai-assessment">AI Engine</a>
+    <a href="#achievements">Impact</a>
+    <a href="#contact">Get Started</a>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       § 1 · HERO
+  ═══════════════════════════════════════════════════════ -->
+  <section id="hero" class="section" aria-label="Hero">
+    <div class="hero-bg-img" aria-hidden="true"></div>
+    <div class="floating-shapes" aria-hidden="true">
+      <div class="shape" style="width:500px;height:500px;background:radial-gradient(var(--cyan),transparent);top:-100px;right:-100px;opacity:0.05;"></div>
+      <div class="shape" style="width:400px;height:400px;background:radial-gradient(var(--lavender),transparent);bottom:-100px;left:-100px;opacity:0.06;animation-delay:3s;"></div>
+    </div>
+    <canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge reveal">
+          <span class="dot"></span>
+          Award-Winning Innovation-Based Learning Platform
+        </div>
+
+        <h1 class="hero-title reveal delay-1">
+          Transform<br>
+          <span class="line2">K-12 Education</span><br>
+          Forever
+        </h1>
+
+        <div class="hero-typed-wrap reveal delay-2">
+          <span class="hero-typed-prefix">Empowering students with</span>
+          <span id="typed-text"></span><span class="cursor-blink" aria-hidden="true"></span>
+        </div>
+
+        <p class="hero-description reveal delay-3">
+          Nano Mech Labs is a Chennai-based award-winning EdTech company transforming K-12 education through innovation-based learning. We seamlessly blend NEP-aligned academic policy, STEAM, UN SDGs, and student psychological assessments — powered by our proprietary AI solution.
+        </p>
+
+        <div class="hero-ctas reveal delay-4">
+          <a href="#products" class="btn-primary" id="hero-explore-btn">
+            Explore Platform <span aria-hidden="true">→</span>
+          </a>
+          <a href="#contact" class="btn-secondary" id="hero-demo-btn">
+            <span aria-hidden="true">▶</span>
+            Book a Demo
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator" aria-label="Scroll down">
+      <div class="scroll-mouse"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       § 2 · ABOUT
+  ═══════════════════════════════════════════════════════ -->
+  <section id="about" class="section" aria-label="About Nano Mech Labs">
+    <div class="floating-shapes" aria-hidden="true">
+      <div class="shape" style="width:600px;height:600px;background:radial-gradient(var(--coral),transparent);top:-200px;left:-200px;opacity:0.04;"></div>
+    </div>
+
+    <div class="container">
+      <div class="about-grid">
+        <!-- Visual -->
+        <div class="about-visual reveal-left">
+          <div class="about-img-wrap">
+            <img src="assets/about_bg.png" alt="Students engaging in hands-on innovation learning at Nano Mech Labs" loading="lazy" />
+            <div class="about-img-overlay"></div>
+          </div>
+          <div class="about-accent-card">
+            <div class="big-num">500K+</div>
+            <div class="label">Students Reached</div>
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div class="about-text reveal-right">
+          <div class="section-tag">🏫 Our Mission</div>
+          <h2 class="section-title">
+            Where <em>Innovation</em> Meets<br>Education
+          </h2>
+          <p class="section-subtitle">
+            Nano Mech Labs is an award-winning EdTech company headquartered at the Ganesan Incubation and Entrepreneurship Centre, Chennai. We design immersive, project-based curricula powered by AI that bridge the gap between future-ready skills and classroom learning — aligned with India's National Education Policy (NEP 2020) and the UN Sustainable Development Goals.
+          </p>
+          <p class="section-subtitle" style="margin-top:16px;">
+            From Grade 1 to Grade 12, our platform equips students with STEAM skills, holistic psychological insights, and the tools they need to become confident, responsible innovators.
+          </p>
+
+          <div class="stats-grid" style="margin-top:36px;">
+            <div class="stat-card reveal delay-1">
+              <div class="stat-number"><span class="count-up" data-target="500" data-suffix="K+">0</span></div>
+              <div class="stat-label">Students</div>
+            </div>
+            <div class="stat-card reveal delay-2">
+              <div class="stat-number"><span class="count-up" data-target="1200" data-suffix="+">0</span></div>
+              <div class="stat-label">Schools</div>
+            </div>
+            <div class="stat-card reveal delay-3">
+              <div class="stat-number"><span class="count-up" data-target="18" data-suffix="+">0</span></div>
+              <div class="stat-label">Awards Won</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       § 3 · PRODUCTS
+  ═══════════════════════════════════════════════════════ -->
+  <section id="products" class="section" aria-label="Our Products">
+    <div class="floating-shapes" aria-hidden="true">
+      <div class="shape" style="width:700px;height:700px;background:radial-gradient(var(--blue),transparent);top:-300px;right:-200px;opacity:0.04;"></div>
+    </div>
+
+    <div class="container">
+      <div class="products-header">
+        <div class="section-tag reveal">🚀 Our Platform</div>
+        <h2 class="section-title reveal delay-1">
+          Tools Built for the<br>
+          <span class="gradient-text">Classrooms of Tomorrow</span>
+        </h2>
+        <p class="section-subtitle center reveal delay-2">
+          A unified AI-powered suite designed to empower teachers, engage students, and deliver actionable insights to administrators — blending NEP-aligned academic policy, STEAM, SDGs, and psychological well-being seamlessly.
+        </p>
+      </div>
+
+      <div class="products-grid">
+        <article class="product-card reveal delay-1" id="product-learning-platform">
+          <div class="product-icon">🎓</div>
+          <h3 class="product-name">Innovation Learning Platform</h3>
+          <p class="product-desc">
+            A full-stack LMS with project-based challenges, mentor networks, and real-world problem-solving modules from Grade 1–12 — aligned with India's NEP 2020 academic policy framework and designed for both online and offline use.
+          </p>
+          <div class="product-tags">
+            <span class="product-tag-pill">Project-Based</span>
+            <span class="product-tag-pill">Grades 1–12</span>
+            <span class="product-tag-pill">Offline-Ready</span>
+            <span class="product-tag-pill">NEP 2020</span>
+          </div>
+          <span class="product-arrow">→</span>
+        </article>
+
+        <article class="product-card reveal delay-2" id="product-assessment">
+          <div class="product-icon">🤖</div>
+          <h3 class="product-name">AI Assessment Engine</h3>
+          <p class="product-desc">
+            Adaptive quizzes and competency mapping powered by our proprietary AI model — personalising learning paths for every student by integrating both academic performance and psychological assessment data in real time.
+          </p>
+          <div class="product-tags">
+            <span class="product-tag-pill">Adaptive AI</span>
+            <span class="product-tag-pill">Real-time</span>
+            <span class="product-tag-pill">NEP Aligned</span>
+            <span class="product-tag-pill">Holistic</span>
+          </div>
+          <span class="product-arrow">→</span>
+        </article>
+
+        <article class="product-card reveal delay-3" id="product-curriculum">
+          <div class="product-icon">📚</div>
+          <h3 class="product-name">STEAM Curriculum Builder</h3>
+          <p class="product-desc">
+            An intuitive tool for educators to design and deploy cross-disciplinary STEAM lessons mapped to national learning standards and UN Sustainable Development Goals — with ready-to-use templates and resource packs.
+          </p>
+          <div class="product-tags">
+            <span class="product-tag-pill">STEAM</span>
+            <span class="product-tag-pill">SDG-Mapped</span>
+            <span class="product-tag-pill">Templates</span>
+          </div>
+          <span class="product-arrow">→</span>
+        </article>
+
+        <article class="product-card reveal delay-4" id="product-psychological">
+          <div class="product-icon">🧠</div>
+          <h3 class="product-name">Psychological Assessment Suite</h3>
+          <p class="product-desc">
+            Holistic student well-being tools that assess learning styles, emotional intelligence, and cognitive strengths — enabling teachers to support every child's development beyond academic scores.
+          </p>
+          <div class="product-tags">
+            <span class="product-tag-pill">Well-being</span>
+            <span class="product-tag-pill">Holistic</span>
+            <span class="product-tag-pill">Evidence-Based</span>
+          </div>
+          <span class="product-arrow">→</span>
+        </article>
+
+        <article class="product-card reveal delay-5" id="product-analytics">
+          <div class="product-icon">📊</div>
+          <h3 class="product-name">Analytics Dashboard</h3>
+          <p class="product-desc">
+            Comprehensive learning analytics for school administrators — track student progress, teacher performance, and institutional outcomes with exportable PDF reports and multi-school management in a single view.
+          </p>
+          <div class="product-tags">
+            <span class="product-tag-pill">Real-time Data</span>
+            <span class="product-tag-pill">PDF Reports</span>
+            <span class="product-tag-pill">Multi-School</span>
+          </div>
+          <span class="product-arrow">→</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       § 4 · STEAM
+  ═══════════════════════════════════════════════════════ -->
+  <section id="steam" class="section" aria-label="STEAM Education">
+    <div class="floating-shapes" aria-hidden="true">
+      <div class="shape" style="width:500px;height:500px;background:radial-gradient(var(--rose),transparent);bottom:-150px;left:-100px;opacity:0.05;"></div>
+    </div>
+
+    <div class="container">
+      <div class="steam-layout">
+        <!-- Text -->
+        <div class="steam-content">
+          <div class="section-tag reveal">🔬 STEAM Learning</div>
+          <h2 class="section-title reveal delay-1">
+            Five Disciplines,<br>
+            <span class="gradient-text">One Powerful Vision</span>
+          </h2>
+          <p class="section-subtitle reveal delay-2">
+            We weave Science, Technology, Engineering, Arts, and Mathematics into cohesive learning journeys — enriched with psychological insights and anchored in how real innovation happens at the intersection of disciplines.
+          </p>
+
+          <div class="steam-icons-grid reveal delay-3">
+            <div class="steam-icon-card" id="steam-science">
+              <div class="icon">🔬</div>
+              <div class="label">Science</div>
+            </div>
+            <div class="steam-icon-card" id="steam-tech">
+              <div class="icon">💻</div>
+              <div class="label">Tech</div>
+            </div>
+            <div class="steam-icon-card" id="steam-eng">
+              <div class="icon">⚙️</div>
+              <div class="label">Engg</div>
+            </div>
+            <div class="steam-icon-card" id="steam-arts">
+              <div class="icon">🎨</div>
+              <div class="label">Arts</div>
+            </div>
+            <div class="steam-icon-card" id="steam-math">
+              <div class="icon">📐</div>
+              <div class="label">Math</div>
+            </div>
+          </div>
+
+          <div class="steam-features">
+            <div class="steam-feature reveal delay-3">
+              <div class="steam-feature-icon">🌱</div>
+              <div>
+                <div class="steam-feature-title">Project-Based Learning</div>
+                <div class="steam-feature-desc">Students tackle real-world challenges using cross-disciplinary STEAM thinking — building prototypes, running experiments, and presenting solutions at every grade level.</div>
+              </div>
+            </div>
+            <div class="steam-feature reveal delay-4">
+              <div class="steam-feature-icon">🤝</div>
+              <div>
+                <div class="steam-feature-title">Industry Mentorship</div>
+                <div class="steam-feature-desc">Live sessions with engineers, scientists, and designers who guide student projects from ideation to working prototype — bringing the real world into the classroom.</div>
+              </div>
+            </div>
+            <div class="steam-feature reveal delay-5">
+              <div class="steam-feature-icon">🏆</div>
+              <div>
+                <div class="steam-feature-title">Innovation Competitions</div>
+                <div class="steam-feature-desc">Annual student showcase events with national-level recognition, certificates, and scholarship opportunities — celebrating every young innovator.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual -->
+        <div class="steam-visual reveal-right">
+          <img src="assets/steam_visual.png" alt="Students collaborating on a STEAM innovation project" loading="lazy" />
+          <div class="steam-visual-overlay"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       § 5 · SDGs
+  ═══════════════════════════════════════════════════════ -->
+  <section id="sdgs" class="section" aria-label="UN Sustainable Development Goals">
+    <div class="floating-shapes" aria-hidden="true">
+      <div class="shape" style="width:600px;height:600px;background:radial-gradient(var(--mint),transparent);top:-200px;right:-150px;opacity:0.04;"></div>
+    </div>
+
+    <div class="container">
+      <div class="sdgs-header">
+        <div class="section-tag reveal">🌍 Global Impact</div>
+        <h2 class="section-title reveal delay-1">
+          Education That Serves<br>
+          <span class="gradient-text">Humanity's Goals</span>
+        </h2>
+        <p class="section-subtitle center reveal delay-2">
+          Every Nano Mech Labs programme is mapped to the United Nations Sustainable Development Goals — ensuring our students learn to think like global citizens and responsible innovators from day one.
+        </p>
+      </div>
+
+      <div class="sdg-grid">
+        <div class="sdg-card reveal delay-1" id="sdg-1">
+          <div class="sdg-icon">🎯</div>
+          <div class="sdg-number">SDG 4</div>
+          <div class="sdg-title-text">Quality Education</div>
+        </div>
+        <div class="sdg-card reveal delay-2" id="sdg-2">
+          <div class="sdg-icon">⚖️</div>
+          <div class="sdg-number">SDG 5</div>
+          <div class="sdg-title-text">Gender Equality</div>
+        </div>
+        <div class="sdg-card reveal delay-3" id="sdg-3">
+          <div class="sdg-icon">💡</div>
+          <div class="sdg-number">SDG 9</div>
+          <div class="sdg-title-text">Innovation &amp; Industry</div>
+        </div>
+        <div class="sdg-card reveal delay-4" id="sdg-4">
+          <div class="sdg-icon">🤝</div>
+          <div class="sdg-number">SDG 10</div>
+          <div class="sdg-title-text">Reduced Inequalities</div>
+        </div>
+        <div class="sdg-card reveal delay-5" id="sdg-5">
+          <div class="sdg-icon">🌿</div>
+          <div class="sdg-number">SDG 13</div>
+          <div class="sdg-title-text">Climate Action</div>
+        </div>
+        <div class="sdg-card reveal delay-6" id="sdg-6">
+          <div class="sdg-icon">🌐</div>
+          <div class="sdg-number">SDG 17</div>
+          <div class="sdg-title-text">Global Partnerships</div>
+        </div>
+      </div>
+
+      <div class="reveal" style="text-align:center;margin-top:52px;">
+        <p style="color:rgba(255,255,255,0.4);font-size:0.88rem;max-width:560px;margin:0 auto;line-height:1.8;">
+          Our SDG-aligned curriculum framework has been adopted by partner institutions across India, Southeast Asia, and the Middle East.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       § 6 · AI ASSESSMENT
+  ═══════════════════════════════════════════════════════ -->
+  <section id="ai-assessment" class="section" aria-label="AI Assessment Engine">
+    <div class="floating-shapes" aria-hidden="true">
+      <div class="shape" style="width:500px;height:500px;background:radial-gradient(var(--lavender),transparent);bottom:-100px;left:-100px;opacity:0.06;"></div>
+    </div>
+
+    <div class="container">
+      <div class="ai-layout">
+        <!-- Content -->
+        <div class="ai-content">
+          <div class="section-tag reveal">🧠 Proprietary AI</div>
+          <h2 class="section-title reveal delay-1">
+            Intelligence That<br>
+            <span class="gradient-text">Adapts to Every Learner</span>
+          </h2>
+          <p class="section-subtitle reveal delay-2">
+            Our proprietary AI engine doesn't just test — it understands. By blending academic performance data with psychological assessment insights, it maps each student's unique learning fingerprint and continuously adapts the curriculum to close knowledge gaps in real time.
+          </p>
+
+          <div class="ai-features-list">
+            <div class="ai-feature reveal delay-2">
+              <div class="ai-feature-num">01</div>
+              <div>
+                <div class="ai-feature-title">Adaptive Learning Paths</div>
+                <div class="ai-feature-desc">Dynamic content sequencing that evolves based on a student's performance, pace, and learning style preferences — no two paths look the same.</div>
+              </div>
+            </div>
+            <div class="ai-feature reveal delay-3">
+              <div class="ai-feature-num">02</div>
+              <div>
+                <div class="ai-feature-title">Psychological Assessment Integration</div>
+                <div class="ai-feature-desc">Holistic learner profiling that combines cognitive, emotional, and behavioural data to support whole-child development — not just academic scores.</div>
+              </div>
+            </div>
+            <div class="ai-feature reveal delay-4">
+              <div class="ai-feature-num">03</div>
+              <div>
+                <div class="ai-feature-title">Competency Mapping</div>
+                <div class="ai-feature-desc">21st-century skill tracking across critical thinking, creativity, collaboration, and communication — aligned with NEP 2020 competency frameworks.</div>
+              </div>
+            </div>
+            <div class="ai-feature reveal delay-5">
+              <div class="ai-feature-num">04</div>
+              <div>
+                <div class="ai-feature-title">Predictive Analytics</div>
+                <div class="ai-feature-desc">Early-warning system for at-risk learners with actionable, personalised recommendations surfaced directly to teachers and parents.</div>
+              </div>
+            </div>
+            <div class="ai-feature reveal delay-6">
+              <div class="ai-feature-num">05</div>
+              <div>
+                <div class="ai-feature-title">Multi-modal Assessment</div>
+                <div class="ai-feature-desc">Evaluate students through projects, portfolios, peer reviews, and presentations — moving far beyond traditional MCQ-based testing.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual -->
+        <div class="ai-visual reveal-right">
+          <img src="assets/ai_visual.png" alt="AI neural network powering adaptive learning" loading="lazy" />
+          <canvas class="neural-overlay" id="neural-canvas" aria-hidden="true"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       § 7 · ACHIEVEMENTS
+  ═══════════════════════════════════════════════════════ -->
+  <section id="achievements" class="section" aria-label="Awards and Achievements">
+    <div class="floating-shapes" aria-hidden="true">
+      <div class="shape" style="width:600px;height:600px;background:radial-gradient(#f1fa8c,transparent);top:-200px;left:-200px;opacity:0.04;"></div>
+    </div>
+
+    <div class="container">
+      <div class="achievements-header">
+        <div class="section-tag reveal">🏆 Our Impact</div>
+        <h2 class="section-title reveal delay-1">
+          Numbers That Tell<br>
+          <span class="gradient-text">Our Story</span>
+        </h2>
+        <p class="section-subtitle center reveal delay-2">
+          An award-winning legacy of real impact. Here's what we've accomplished alongside our students, schools, and partners across India.
+        </p>
+      </div>
+
+      <!-- Mega Stats -->
+      <div class="achievements-mega-stats">
+        <div class="mega-stat reveal delay-1">
+          <div class="mega-num"><span class="count-up" data-target="500" data-suffix="K+">0</span></div>
+          <div class="mega-label">Students Empowered</div>
+        </div>
+        <div class="mega-stat reveal delay-2">
+          <div class="mega-num"><span class="count-up" data-target="1200" data-suffix="+">0</span></div>
+          <div class="mega-label">Partner Schools</div>
+        </div>
+        <div class="mega-stat reveal delay-3">
+          <div class="mega-num"><span class="count-up" data-target="18" data-suffix="+">0</span></div>
+          <div class="mega-label">States Covered</div>
+        </div>
+        <div class="mega-stat reveal delay-4">
+          <div class="mega-num"><span class="count-up" data-target="98" data-suffix="%">0</span></div>
+          <div class="mega-label">Satisfaction Rate*</div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:0.75rem;color:rgba(255,255,255,0.3);margin-top:-40px;margin-bottom:56px;">*Based on partner school satisfaction survey, 2024</p>
+
+      <!-- Awards -->
+      <div class="awards-grid">
+        <div class="award-card reveal delay-1">
+          <div class="award-icon">🥇</div>
+          <div>
+            <div class="award-title">Best EdTech Startup of the Year</div>
+            <div class="award-org">National Education Summit 2024</div>
+            <div class="award-desc">Recognised for outstanding innovation in K-12 learning technology and its measurable impact on student outcomes across India.</div>
+          </div>
+        </div>
+        <div class="award-card reveal delay-2">
+          <div class="award-icon">🌟</div>
+          <div>
+            <div class="award-title">Innovation in Education Recognition</div>
+            <div class="award-org">Asia-Pacific Education Forum 2023</div>
+            <div class="award-desc">Awarded for our SDG-aligned curriculum framework adopted by partner institutions across multiple countries in South and Southeast Asia.</div>
+          </div>
+        </div>
+        <div class="award-card reveal delay-3">
+          <div class="award-icon">🚀</div>
+          <div>
+            <div class="award-title">Top 50 EdTech Companies in India</div>
+            <div class="award-org">EduTech India 2023</div>
+            <div class="award-desc">Ranked among India's most impactful education technology companies two consecutive years running for platform reach and learning outcomes.</div>
+          </div>
+        </div>
+        <div class="award-card reveal delay-4">
+          <div class="award-icon">💡</div>
+          <div>
+            <div class="award-title">ATAL Innovation Mission Partner</div>
+            <div class="award-org">NITI Aayog, Government of India</div>
+            <div class="award-desc">Certified implementation partner under India's flagship innovation and entrepreneurship programme for K-12 schools nationwide.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       § 8 · CONTACT
+  ═══════════════════════════════════════════════════════ -->
+  <section id="contact" class="section" aria-label="Contact Nano Mech Labs">
+    <div class="floating-shapes" aria-hidden="true">
+      <div class="shape" style="width:500px;height:500px;background:radial-gradient(var(--pink),transparent);bottom:-100px;right:-100px;opacity:0.06;"></div>
+    </div>
+
+    <div class="container">
+      <div class="contact-layout">
+        <!-- Info -->
+        <div class="contact-info-col">
+          <div class="section-tag reveal">✉️ Connect With Us</div>
+          <h2 class="section-title reveal delay-1">
+            Ready to<br>
+            <span class="gradient-text">Transform Your School?</span>
+          </h2>
+          <p class="section-subtitle reveal delay-2">
+            Whether you're a school principal, education policymaker, or NGO partner — we'd love to explore how Nano Mech Labs can supercharge learning at your institution.
+          </p>
+
+          <div class="contact-info reveal delay-3">
+            <div class="contact-info-item">
+              <div class="contact-icon-wrap">📧</div>
+              <div>
+                <div class="contact-info-title">Email</div>
+                <div class="contact-info-value">
+                  <a href="mailto:nanomechlabs@gmail.com" style="color:var(--cyan);text-decoration:none;">nanomechlabs@gmail.com</a>
+                </div>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <div class="contact-icon-wrap">📞</div>
+              <div>
+                <div class="contact-info-title">Phone</div>
+                <div class="contact-info-value">
+                  <a href="tel:+919952042688" style="color:var(--text);text-decoration:none;">+91 99520 42688</a>
+                </div>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <div class="contact-icon-wrap">📍</div>
+              <div>
+                <div class="contact-info-title">Office</div>
+                <div class="contact-info-value">
+                  Ganesan Incubation &amp; Entrepreneurship Centre,<br>
+                  Old Mahabalipuram Road, Vinayaka Nagar,<br>
+                  Paiyanoori, Chennai, Tamil Nadu — 603104
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="social-links reveal delay-4">
+            <a href="https://www.linkedin.com/company/nanomechlabs/" class="social-btn" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
+            <a href="tel:+919952042688" class="social-phone" aria-label="Call us">📞</a>
+            <a href="https://www.instagram.com/nanomechlabs/" class="social-btn" target="_blank" rel="noopener noreferrer" aria-label="Instagram">📷</a>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <div class="contact-form-wrap reveal delay-2">
+          <div class="form-title">Send Us a Message</div>
+
+          <div id="form-success" class="form-success">
+            <div class="success-icon">✅</div>
+            <div class="success-title">Message Sent!</div>
+            <div class="success-msg">We'll get back to you within 24 hours. Looking forward to connecting!</div>
+          </div>
+
+          <form id="contact-form" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="form-name">Full Name</label>
+                <input type="text" id="form-name" name="name" placeholder="Dr. Anjali Sharma" autocomplete="name" />
+                <div class="form-error" id="err-name">Please enter your full name.</div>
+              </div>
+              <div class="form-group">
+                <label for="form-email">Email Address</label>
+                <input type="email" id="form-email" name="email" placeholder="you@school.edu.in" autocomplete="email" />
+                <div class="form-error" id="err-email">Please enter a valid email address.</div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="form-school">School / Organisation</label>
+                <input type="text" id="form-school" name="school" placeholder="DPS, New Delhi" />
+                <div class="form-error" id="err-school">Please enter your school or organisation.</div>
+              </div>
+              <div class="form-group">
+                <label for="form-role">Your Role</label>
+                <select id="form-role" name="role">
+                  <option value="">Select a role…</option>
+                  <option value="principal">School Principal</option>
+                  <option value="teacher">Teacher / Educator</option>
+                  <option value="admin">School Administrator</option>
+                  <option value="ngo">NGO / Foundation</option>
+                  <option value="government">Government Official</option>
+                  <option value="parent">Parent</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="form-message">Message</label>
+              <textarea id="form-message" name="message" placeholder="Tell us about your school, your student count, and how you'd like to collaborate…"></textarea>
+              <div class="form-error" id="err-message">Please write a brief message.</div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btn-submit-contact">
+              <span id="btn-submit-text">Send Message</span>
+              <span id="btn-submit-icon">→</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════ -->
+  <footer id="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">Nano Mech Labs</div>
+        <nav class="footer-links" aria-label="Footer navigation">
+          <a href="#hero">Home</a>
+          <a href="#about">About</a>
+          <a href="#products">Products</a>
+          <a href="#steam">STEAM</a>
+          <a href="#sdgs">SDGs</a>
+          <a href="#ai-assessment">AI Engine</a>
+          <a href="#achievements">Impact</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <p class="footer-copy">
+          © 2025 Nano Mech Labs. All rights reserved.<br>
+          Award-Winning Innovation-Based Learning Platform — Transforming K-12 Education across India and beyond.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCRIPTS  (moved to end of body — fixes DOM-ready bug)
+  ═══════════════════════════════════════════════════════ -->
+  <script src="script.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      /* ── Loader ── */
+      setTimeout(function () {
+        document.getElementById('loader').classList.add('hidden');
+      }, 2000);
+
+      /* ── Scroll progress bar ── */
+      var progressBar = document.getElementById('scroll-progress');
+      window.addEventListener('scroll', function () {
+        var scrollTop = window.scrollY;
+        var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        progressBar.style.width = (scrollTop / docHeight * 100) + '%';
+      }, { passive: true });
+
+      /* ── Navbar scroll behaviour ── */
+      var navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', function () {
+        navbar.classList.toggle('scrolled', window.scrollY > 40);
+      }, { passive: true });
+
+      /* ── Hamburger menu ── */
+      var hamburger = document.getElementById('hamburger');
+      var mobileNav = document.getElementById('mobile-nav');
+      hamburger.addEventListener('click', function () {
+        var open = hamburger.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', open);
+        mobileNav.classList.toggle('open', open);
+        mobileNav.setAttribute('aria-hidden', !open);
+      });
+      mobileNav.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          hamburger.classList.remove('open');
+          mobileNav.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          mobileNav.setAttribute('aria-hidden', 'true');
+        });
+      });
+
+      /* ── Typed text ── */
+      var phrases = [
+        'STEAM-powered curiosity',
+        'AI-driven learning paths',
+        '21st-century skills',
+        'SDG-aligned projects',
+        'holistic assessments',
+        'innovation mindsets'
+      ];
+      var typedEl = document.getElementById('typed-text');
+      var phraseIndex = 0, charIndex = 0, deleting = false;
+      function typeLoop() {
+        var current = phrases[phraseIndex];
+        typedEl.textContent = deleting ? current.slice(0, charIndex--) : current.slice(0, charIndex++);
+        if (!deleting && charIndex > current.length) {
+          deleting = true;
+          setTimeout(typeLoop, 1800);
+          return;
+        }
+        if (deleting && charIndex < 0) {
+          deleting = false;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+        }
+        setTimeout(typeLoop, deleting ? 40 : 80);
+      }
+      typeLoop();
+
+      /* ── Intersection observer for reveal animations ── */
+      var revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+      var revealObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      revealEls.forEach(function (el) { revealObs.observe(el); });
+
+      /* ── Count-up animations ── */
+      var countEls = document.querySelectorAll('.count-up');
+      var countObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var target = parseInt(el.dataset.target, 10);
+            var suffix = el.dataset.suffix || '';
+            var duration = 1800;
+            var start = performance.now();
+            function tick(now) {
+              var elapsed = now - start;
+              var progress = Math.min(elapsed / duration, 1);
+              var eased = 1 - Math.pow(1 - progress, 3);
+              el.textContent = Math.round(eased * target) + suffix;
+              if (progress < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+            countObs.unobserve(el);
+          }
+        });
+      }, { threshold: 0.3 });
+      countEls.forEach(function (el) { countObs.observe(el); });
+
+      /* ── Particles canvas ── */
+      var canvas = document.getElementById('particles-canvas');
+      if (canvas) {
+        var ctx = canvas.getContext('2d');
+        var particles = [];
+        function resizeCanvas() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas, { passive: true });
+        for (var i = 0; i < 60; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.5 + 0.3,
+            dx: (Math.random() - 0.5) * 0.3,
+            dy: (Math.random() - 0.5) * 0.3,
+            a: Math.random() * 0.4 + 0.1
+          });
+        }
+        function animateParticles() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles.forEach(function (p) {
+            p.x += p.dx; p.y += p.dy;
+            if (p.x < 0) p.x = canvas.width;
+            if (p.x > canvas.width) p.x = 0;
+            if (p.y < 0) p.y = canvas.height;
+            if (p.y > canvas.height) p.y = 0;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,229,255,' + p.a + ')';
+            ctx.fill();
+          });
+          requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+      }
+
+      /* ── EmailJS contact form ── */
+      /* BUG FIX: moved here so DOM exists and emailjs SDK is loaded */
+      function validateForm() {
+        var valid = true;
+        var name  = document.getElementById('form-name');
+        var email = document.getElementById('form-email');
+        var school = document.getElementById('form-school');
+        var message = document.getElementById('form-message');
+
+        [name, email, school, message].forEach(function (el) {
+          el.classList.remove('invalid');
+        });
+        document.querySelectorAll('.form-error').forEach(function (e) { e.classList.remove('show'); });
+
+        if (!name.value.trim()) {
+          name.classList.add('invalid');
+          document.getElementById('err-name').classList.add('show');
+          valid = false;
+        }
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.value.trim())) {
+          email.classList.add('invalid');
+          document.getElementById('err-email').classList.add('show');
+          valid = false;
+        }
+        if (!school.value.trim()) {
+          school.classList.add('invalid');
+          document.getElementById('err-school').classList.add('show');
+          valid = false;
+        }
+        if (!message.value.trim()) {
+          message.classList.add('invalid');
+          document.getElementById('err-message').classList.add('show');
+          valid = false;
+        }
+        return valid;
+      }
+
+      var contactForm = document.getElementById('contact-form');
+      if (contactForm) {
+        contactForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (!validateForm()) return;
+
+          var btn  = document.getElementById('btn-submit-contact');
+          var btnText = document.getElementById('btn-submit-text');
+          btn.disabled = true;
+          btnText.textContent = 'Sending…';
+
+          /* Ensure emailjs is available */
+          if (typeof emailjs === 'undefined') {
+            alert('Email service is loading. Please try again in a moment.');
+            btn.disabled = false;
+            btnText.textContent = 'Send Message';
+            return;
+          }
+
+          emailjs.init('Q462ZGqIi5J63iocg');
+
+          var templateParams = {
+            from_name:  document.getElementById('form-name').value,
+            from_email: document.getElementById('form-email').value,
+            school:     document.getElementById('form-school').value,
+            role:       document.getElementById('form-role').value,
+            message:    document.getElementById('form-message').value
+          };
+
+          emailjs.send('service_4v90p4q', 'template_d5ih6mv', templateParams)
+            .then(function () {
+              contactForm.style.display = 'none';
+              document.getElementById('form-success').classList.add('show');
+            })
+            .catch(function (error) {
+              console.error('EmailJS error:', error);
+              alert('Failed to send message. Please email us directly at nanomechlabs@gmail.com');
+              btn.disabled = false;
+              btnText.textContent = 'Send Message';
+            });
+        });
+      }
+
+    }); /* end DOMContentLoaded */
+  </script>
+
+</body>
+</html>
